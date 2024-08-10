@@ -1,0 +1,26 @@
+---
+name: Sandbox Request
+description: Use this to request for new Sandbox.
+title: "[SANDBOX NAME]"
+labels:
+  - sandbox
+assignees:
+  - fernandokarnagi
+body:
+  - type: input
+    id: sandboxname
+    attributes:
+      label: Sandbox Name
+      description: "Sandbox Name"
+      placeholder: "Tell us more about the name of the sandbox."
+    validations:
+      required: true
+
+  - type: textarea
+    id: remarks
+    attributes:
+      label: Remarks
+      description: |
+        Tell us more about this request
+    validations:
+      required: true

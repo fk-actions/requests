@@ -1,0 +1,26 @@
+---
+name: Repository Request
+description: Use this to request for new Repository.
+title: "[REPONAME]"
+labels:
+  - repo
+assignees:
+  - fernandokarnagi
+body:
+  - type: input
+    id: reponame
+    attributes:
+      label: Repository Name
+      description: "Repository Name"
+      placeholder: "Tell us more about the name of the repository."
+    validations:
+      required: true
+
+  - type: textarea
+    id: remarks
+    attributes:
+      label: Remarks
+      description: |
+        Tell us more about this request
+    validations:
+      required: true

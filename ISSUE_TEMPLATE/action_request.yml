@@ -1,0 +1,26 @@
+---
+name: Action Request
+description: Use this to request for new Action.
+title: "[ACTIONNAME]"
+labels:
+  - action
+assignees:
+  - fernandokarnagi
+body:
+  - type: input
+    id: actionname
+    attributes:
+      label: Action Name
+      description: "Action Name"
+      placeholder: "Tell us more about the name of the action."
+    validations:
+      required: true
+
+  - type: textarea
+    id: remarks
+    attributes:
+      label: Remarks
+      description: |
+        Tell us more about this request
+    validations:
+      required: true

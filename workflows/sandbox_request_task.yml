@@ -1,0 +1,88 @@
+name: "Sandbox_Request_Task"
+
+on:
+  workflow_dispatch: 
+
+jobs:
+  process_sandbox_task:
+    name: Print info
+    runs-on: ubuntu-latest 
+    steps:
+      - name: Print project
+        run: |
+          gh auth status
+          echo "Token: $GH_TOKEN"
+          echo "Repo: $GH_REPO"
+          echo "Organization: $ORGANIZATION"
+          gh api graphql -f query='
+            query ($org: String!) {
+              organization(login: $org) {
+                id
+                getProjects: projectsV2(first: 20) {
+                  projects: nodes {
+                    projectName: title
+                    getFields: items(first: 20) {
+                      fields: nodes {
+                        status: fieldValueByName(name: "Status") {
+                          ... on ProjectV2ItemFieldSingleSelectValue {
+                            value: name                
+                          }
+                        }
+                        originator: fieldValueByName(name: "Originator") {
+                          ... on ProjectV2ItemFieldTextValue {
+                            value: text
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ' -f org=$ORGANIZATION 
+        env:
+          # GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.ORG_GITHUB_PAT_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          ORGANIZATION: ${{ github.repository_owner }}
+
+      - name: Print issue
+        run: |
+          gh auth status
+          echo "Token: $GH_TOKEN"
+          echo "Repo: $GH_REPO"
+          echo "Organization: $ORGANIZATION"
+          gh api graphql -f query='
+              query ($org: String!, $repo: String!) {
+                organization(login: $org) {
+                  id
+                  repository(name: $repo) {
+                    name
+                    issues(last: 3) {
+                      nodes {
+                        title
+                        projectItems(first: 20) {
+                          nodes {
+                            status: fieldValueByName(name: "Status") {
+                              ... on ProjectV2ItemFieldSingleSelectValue {
+                                value: name
+                              }
+                            }
+                            originator: fieldValueByName(name: "Originator") {
+                              ... on ProjectV2ItemFieldTextValue {
+                                value: text
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+          ' -f org=$ORGANIZATION -f repo=$GH_REPO
+        env:
+          # GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.ORG_GITHUB_PAT_TOKEN }}
+          GH_REPO: "${{ github.re }}"
+          ORGANIZATION: ${{ github.repository_owner }}

@@ -1,0 +1,57 @@
+name: "Sandbox_Request_New"
+
+on:
+  issues:
+    types:
+      - opened
+  workflow_dispatch: 
+
+jobs:
+  validate_sandbox_request:
+    name: Process sandbox request
+    outputs:
+      repo: ${{ steps.output_vars.outputs.reponame }}
+      issue: ${{ steps.output_vars.outputs.issuenumber }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print issue label
+        id: print_issue_label
+        run: |
+          echo ${{ github.event.issue.labels[0].name }}
+          echo "# Label name:" >> $GITHUB_STEP_SUMMARY
+      - name: Dump GitHub context
+        id: dump_github_context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo "$GITHUB_CONTEXT"
+      - name: Set output vars
+        id: output_vars
+        env:
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+        run: |
+          echo "reponame=$GH_REPO" >> "$GITHUB_OUTPUT"
+          echo "issuenumber=$NUMBER" >> "$GITHUB_OUTPUT"
+
+  process_sandbox_request:
+    name: Validate sandbox request
+    runs-on: ubuntu-latest
+    needs: 
+      - validate_sandbox_request
+    steps:
+      - name: Add comment
+        run: |
+          gh auth status
+          echo "Token: $GH_TOKEN"
+          echo "Repo: $GH_REPO"
+          echo "Issue number: $NUMBER"
+          echo "Issue body: $BODY"
+          gh issue --repo ${GH_REPO} comment "$NUMBER" --body "$BODY"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ needs.validate_sandbox_request.outputs.repo }}
+          NUMBER: ${{ needs.validate_sandbox_request.outputs.issue }}
+          BODY: >
+            Thanks for submitting your first issue, we will have a look as quickly as possible.
+            **Make sure to reference this issue in your pull request.**
