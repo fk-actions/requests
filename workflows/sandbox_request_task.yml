@@ -84,5 +84,5 @@ jobs:
         env:
           # GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.ORG_GITHUB_PAT_TOKEN }}
-          GH_REPO: "${{ github.re }}"
+          GH_REPO: "requests"
           ORGANIZATION: ${{ github.repository_owner }}
